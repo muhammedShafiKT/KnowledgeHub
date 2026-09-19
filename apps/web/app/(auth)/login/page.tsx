@@ -9,6 +9,8 @@ function page() {
     email : "" ,
     password : ""
  })   
+
+ const[error,seterror] = useState()
  const router = useRouter()
 function handleChange(e) {
    const {name , value} = e.target
@@ -21,8 +23,9 @@ async function handleClick(e){
     try {
        const result = await authApi.login(userDetails) 
         router.push("/")
-    } catch (error) {
-        console.error(error)
+    } catch (err) {
+        console.error(err)
+        seterror(err?.response?.data?.message || "login failed")
     }
 
 }
@@ -37,6 +40,7 @@ async function handleClick(e){
          <input type="email"   name='email' value={userDetails.email} onChange={handleChange} />
          
          <input type="password" name="password" value={userDetails.password} onChange={handleChange}/>
+         {error&&<p>{error}</p>}
           <button type='submit'>submit </button>
          </form>
        </div>

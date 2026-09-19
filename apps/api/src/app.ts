@@ -11,7 +11,8 @@ const app = express()
 
 app.use(helmet())
 app.use(cors({
-    origin : process.env.FRONTEND_URL
+    origin : process.env.FRONTEND_URL,
+    credentials : true
 }))
 app.use(express.json())
 app.use(cookieParser())
@@ -30,8 +31,6 @@ app.use((err : any , req : Request ,res :Response , next : NextFunction )=>{
     console.error(err)
     res.status(500).json({message : "internal server error"})
 })
-app.get("/health",async(req,res)=>{
-    res.status(201).json({message : "ok" , service : "knowledgehub"})
-})
+
 
 export default app
