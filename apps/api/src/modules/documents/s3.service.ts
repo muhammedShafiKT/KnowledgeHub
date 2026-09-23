@@ -7,7 +7,7 @@ export async function uploadtoS3(
     contentType :string
 ){
     const command = new PutObjectCommand({
-        Bucket : process.env.AWS_BUCKET,
+        Bucket : process.env.AWS_S3_BUCKET,
         Key : key,
         Body : buffer,
         ContentType : contentType
