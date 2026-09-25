@@ -1,13 +1,11 @@
-a = {
-    1 : "aa",
-    77 : "fjfj"
-}
-print(a)
+import fitz
 
-def abb(a:dict[int,str])->dict[int,str]:
-    return f"hello , {a}"
+def sample_pdf():
+    document = fitz.open("sample.pdf")
     
+    for page in document:
+        print(page.get_text())
+    
+    document.close()   
 
-
-b = abb({1:"ddd","b":"frr"})
-print(b)
+sample_pdf()     

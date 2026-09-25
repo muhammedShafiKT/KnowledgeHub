@@ -1,7 +1,10 @@
 import { uploadtoS3 } from "./s3.service.js"
 import prisma from "../../lib/prisma.js"
+import { aiService } from "./ai.service.js"
+import { AppError } from "../../utils/appError.js"
 export const documentService = {
     upload : async(file : Express.Multer.File , userId : string)=>{
+
         const key = `documents/${userId}/${crypto.randomUUID()}.pdf`
 
         const uploadKey = await uploadtoS3(
@@ -17,6 +20,8 @@ export const documentService = {
              size : file.size
             }
         })
-        return document
+
+        const aiResult = await aiService.process_document(document.id,document.s3Key)
+        return {document,aiResult}
     }
 }
