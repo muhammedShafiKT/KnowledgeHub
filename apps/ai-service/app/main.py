@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from app.services.pdf_service import extract_text
 from app.services.s3_service import download_fromS3
+from app.services.chunk_service import chunk_test
 app=FastAPI(title="Knowledgehub ai service")
 
 class DocumentRequest(BaseModel):
@@ -20,9 +21,10 @@ def health():
 def process_document(data:DocumentRequest):
     pdf_bytes = download_fromS3(data.s3_key)
     text = extract_text(pdf_bytes)
+    chunks = chunk_test(text)
     return{
         "success" :True,
-        "service" : "ai service",
-        "status" : "running",
-        "text" : text
+        "doc_id" : data.document_id,
+        "chunk_count" : len(chunks),
+        "chunks" : chunks
         }      
