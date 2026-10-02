@@ -39,6 +39,8 @@ model Document {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  chunks       DocumentChunk[]
+
   @@index([userId])
 }
 
@@ -47,4 +49,20 @@ enum DocumentStatus {
   PROCESSING
   READY
   FAILED
+}
+
+model DocumentChunk {
+  id         String   @id @default(uuid())
+  documentId String
+
+  content    String
+  chunkIndex Int
+
+  embedding  Unsupported("vector(384)")
+
+  createdAt  DateTime @default(now())
+
+document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
 }
