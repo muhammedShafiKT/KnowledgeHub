@@ -9,5 +9,20 @@ export const aiService = {
     s3_key: s3_key
         })
         return response.data
+    },
+
+    search_document: async(
+        document_id: string,
+        question : string,
+        limit : number = 5
+    )=>{
+        const response = await axios.post("http://localhost:8000/search",{
+                document_id: document_id,
+                question,
+                limit
+   
+        })
+        return response.data
     }
 }
+

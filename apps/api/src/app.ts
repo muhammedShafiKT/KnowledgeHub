@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 dotenv.config()
 import authroutes from "../src/modules/auth/auth.routes.js"
 import documentroutes from "../src/modules/documents/document.routes.js"
+import searchRoutes from "../src/modules/search/search.routes.js"
 import { Prisma } from "./generated/prisma/client.js"
 import cookieParser from "cookie-parser"
 import { AppError } from "./utils/appError.js"
@@ -21,6 +22,7 @@ app.use(cookieParser())
 
 app.use("/api/auth" , authroutes)
 app.use("/api/document" , documentroutes)
+app.use("/api/search", searchRoutes);
 
 
 app.use((err : any , req : Request ,res :Response , next : NextFunction )=>{

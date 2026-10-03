@@ -5,11 +5,17 @@ from app.services.s3_service import download_fromS3
 from app.services.chunk_service import chunk_test
 from app.services.embedding_service import generate_embedding
 from app.repositories.chunk_repository import save_chunks
+from app.repositories.search_repositary import search_similarChunks
 app=FastAPI(title="Knowledgehub ai service")
 
 class DocumentRequest(BaseModel):
     document_id : str
     s3_key : str
+
+class searchRequest(BaseModel):
+    document_id : str
+    question : str
+    limit : int=5   
     
 @app.get("/health")
 def health():
@@ -40,4 +46,33 @@ def process_document(data:DocumentRequest):
         "success" :True,
         "doc_id" : data.document_id,
         "chunk_count" : len(chunks)
-        }      
+        } 
+    
+    
+@app.post("/search") 
+def search(data : searchRequest):
+    # 1.convert into embedding  
+    query_Embedding = generate_embedding([data.question])[0] 
+    
+    # 2.relevant Chunks
+    results = search_similarChunks(
+        data.document_id,
+        query_Embedding,
+        data.limit
+    )
+    
+    formatted_results = []
+    
+    for result in results:
+        formatted_results.append({
+                        "chunk_id": result[0],
+            "document_id": result[1],
+            "content": result[2],
+            "chunk_index": result[3],
+            "similarity": result[4]
+        })
+    return {
+        "success" : True,
+        "question" : data.question,
+        "results" : formatted_results
+    }    
