@@ -9,6 +9,9 @@ import searchRoutes from "../src/modules/search/search.routes.js"
 import { Prisma } from "./generated/prisma/client.js"
 import cookieParser from "cookie-parser"
 import { AppError } from "./utils/appError.js"
+import swaggerUi from "swagger-ui-express";
+
+import swaggerSpec from "./config/swagger.js";
 const app = express()
 
 app.use(helmet())
@@ -18,7 +21,11 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use(cookieParser())
-
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 app.use("/api/auth" , authroutes)
 app.use("/api/document" , documentroutes)
