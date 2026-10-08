@@ -6,6 +6,9 @@ from app.services.chunk_service import chunk_test
 from app.services.embedding_service import generate_embedding
 from app.repositories.chunk_repository import save_chunks
 from app.repositories.search_repositary import search_similarChunks
+from app.services.context_service import build_context
+from app.services.prompt_service import build_rag_prompt
+from app.services.llm_service import generate_answer
 app=FastAPI(title="Knowledgehub ai service")
 
 class DocumentRequest(BaseModel):
@@ -71,8 +74,17 @@ def search(data : searchRequest):
             "chunk_index": result[3],
             "similarity": result[4]
         })
+        
+        context = build_context(formatted_results)
+        # print(context)
+        
+        prompt = build_rag_prompt(data.question,context)
+        print(f"prompt:{prompt}")
+        
+        answer = generate_answer(prompt)
     return {
         "success" : True,
         "question" : data.question,
-        "results" : formatted_results
+        "answer" : answer,
+        "source" : formatted_results
     }    
