@@ -79,7 +79,7 @@ def search(data : searchRequest):
         # print(context)
         
         prompt = build_rag_prompt(data.question,context)
-        print(f"prompt:{prompt}")
+        # print(f"prompt:{prompt}")
         
         answer = generate_answer(prompt)
     return {

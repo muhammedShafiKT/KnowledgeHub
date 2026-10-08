@@ -23,5 +23,13 @@ export const documentService = {
 
         const aiResult = await aiService.process_document(document.id,document.s3Key)
         return {document,aiResult}
+    },
+    getdocumentsbyUser : async(userId : string)=>{
+        const data = await prisma.document.findMany({
+            where : {
+                userId : userId
+            }
+        })
+        return data
     }
 }

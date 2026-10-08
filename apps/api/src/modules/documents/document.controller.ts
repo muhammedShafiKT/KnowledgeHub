@@ -20,3 +20,19 @@ res.json({
 })
 
 })
+
+export const getdocumentsbyUserId = asyncWrapper(async(req,res)=>{
+ const  userId = req.userId
+ if(!userId){
+  throw new AppError(400,"User not exists")
+ }
+ const data = await documentService.getdocumentsbyUser(userId)
+ if(!data){
+  throw new AppError(400,"No data exists")
+ }
+ res.json({
+    success : true,
+    message  :"file feteched successfully ",
+    data : data
+})
+})
