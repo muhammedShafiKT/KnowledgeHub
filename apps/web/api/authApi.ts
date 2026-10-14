@@ -5,8 +5,9 @@ interface loginInput {
 }
 
 interface registerInput {
-    email : string,
-    password : string
+    email : string;
+    password : string;
+    name? : string;
 }
 
 

@@ -52,39 +52,48 @@ def process_document(data:DocumentRequest):
         } 
     
     
-@app.post("/search") 
-def search(data : searchRequest):
-    # 1.convert into embedding  
-    query_Embedding = generate_embedding([data.question])[0] 
-    
-    # 2.relevant Chunks
+@app.post("/search")
+def search(data: searchRequest):
+    # 1. convert question into embedding
+    query_embedding = generate_embedding([data.question])[0]
+
+    # 2. find relevant chunks
     results = search_similarChunks(
         data.document_id,
-        query_Embedding,
+        query_embedding,
         data.limit
     )
+
+    # 3. format results
+    formatted_results = [
+        {
+            "chunk_id": r[0],
+            "document_id": r[1],
+            "content": r[2],
+            "chunk_index": r[3],
+            "similarity": r[4],
+        }
+        for r in results
+    ]
+
+    # 4. nothing found -> return early, no LLM call
+    if not formatted_results:
+        return {
+            "success": True,
+            "question": data.question,
+            "answer": "I couldn't find relevant information in this document.",
+            "source": [],
+        }
+
+    # 5. build context + prompt, call the LLM once
+    context = build_context(formatted_results)
+    prompt = build_rag_prompt(data.question, context)
+    answer = generate_answer(prompt)
     
-    formatted_results = []
-    
-    for result in results:
-        formatted_results.append({
-                        "chunk_id": result[0],
-            "document_id": result[1],
-            "content": result[2],
-            "chunk_index": result[3],
-            "similarity": result[4]
-        })
-        
-        context = build_context(formatted_results)
-        # print(context)
-        
-        prompt = build_rag_prompt(data.question,context)
-        # print(f"prompt:{prompt}")
-        
-        answer = generate_answer(prompt)
+
     return {
-        "success" : True,
-        "question" : data.question,
-        "answer" : answer,
-        "source" : formatted_results
-    }    
+        "success": True,
+        "question": data.question,
+        "answer": answer,
+        "source": formatted_results,
+    }
